@@ -22,7 +22,7 @@ if you`d like to see the process of receiving/saving IPs(whatever),
    run NTS in debug mode
    ``` 
    sudo ./NTS -debug
-   '''
+   ```
    in debug mode NTS reopens its stdout to /dev/tty8, every ip received will be printed in real time.
 if you`d like to see all already saved information in human readable mode, hit keys ^C (CONTROL-C) when running in debug mode in /dev/tty8.
 
