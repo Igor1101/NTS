@@ -1,4 +1,0 @@
-/home/igor/NTS/CMakeFiles/edit_cache.dir
-/home/igor/NTS/CMakeFiles/rebuild_cache.dir
-/home/igor/NTS/CMakeFiles/NTSlib.dir
-/home/igor/NTS/CMakeFiles/NTS.dir

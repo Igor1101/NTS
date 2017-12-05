@@ -1,2 +1,0 @@
-/usr/bin/ar qc libNTSlib.a  CMakeFiles/NTSlib.dir/src/init_nts.c.o CMakeFiles/NTSlib.dir/src/log_process.c.o CMakeFiles/NTSlib.dir/src/logfile_proc.c.o CMakeFiles/NTSlib.dir/src/signal.c.o
-/usr/bin/ranlib libNTSlib.a
