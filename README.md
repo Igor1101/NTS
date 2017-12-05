@@ -15,7 +15,7 @@ make
 as a result you have object file "NTS"
 
 
-## Running the tests
+### Running the tests
 Now program has no TUI.
 if you`d like to see the process of receiving/saving IPs(whatever),
    run NTS in debug mode
@@ -23,5 +23,6 @@ if you`d like to see the process of receiving/saving IPs(whatever),
    sudo ./NTS -debug
    ```
    in debug mode NTS reopens its stdout to /dev/tty8, every ip received will be printed in real time.
-if you`d like to see all already saved information in human readable mode, hit keys ^C (CONTROL-C) when running in debug mode in /dev/tty8.
-
+if you`d like to see all already saved information in human readable mode, hit keys ^C (CONTROL-C) or send SIGINT when running in debug mode in /dev/tty8.
+### Saving info into file (/var/log/NTS.log)
+Daemon updates information in logfile after it receives SIGHUP or SIGTERM.
