@@ -21,7 +21,7 @@ unsigned int scanlogfile(void)
         if(item >= MAX_AMOUNT_OF_ADDRS)break;
         item++;
     }
-    return item;
+   return item;
 }
 void writelogfile(void)
 {

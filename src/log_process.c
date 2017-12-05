@@ -3,9 +3,23 @@
 #include "NTS.h"
 
 int compare_addresses(const void*a, const void*b)
-{/* used by qsort, binary search */
-    return(signed int)
-        (((const struct logaddr*)a) -> ipv4 - ((const struct logaddr*)b) -> ipv4);
+{/* used by qsort, binary search 
+  we use unsigned values, convert result to sign
+  */
+        if(((const struct logaddr*)a) -> ipv4 >
+                ((const struct logaddr*)b) -> ipv4)
+        {
+            return 1;
+        }
+        else if(((const struct logaddr*)a) -> ipv4 <
+                ((const struct logaddr*)b) -> ipv4)
+        {
+            return -1;/* a - b */
+        }
+        else
+        {
+            return 0;/* a==b*/
+        }
 }
 
 
@@ -18,11 +32,16 @@ void address_add(struct sockaddr saddr)
         (unsigned char)saddr.sa_data[5];
     struct logaddr address;
     address.ipv4 = ip;
+        qsort((void*)&loginfo, 
+                amount_of_logaddr, 
+                sizeof(struct logaddr), 
+                compare_addresses);
+
     /* if saddr in loginfo: */
     void*found = bsearch((void*)&address, 
             (void*)&loginfo, 
-            amount_of_logaddr+1, 
-            sizeof(address),
+            amount_of_logaddr, 
+            sizeof(struct logaddr),
             compare_addresses);
     if(found == NULL)
     {/* write address to array and sort array */
@@ -35,7 +54,7 @@ void address_add(struct sockaddr saddr)
         }
         qsort((void*)&loginfo, 
                 amount_of_logaddr, 
-                sizeof(address), 
+                sizeof(struct logaddr), 
                 compare_addresses);
     }
     else
