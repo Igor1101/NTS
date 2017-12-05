@@ -14,7 +14,6 @@ make
 ```
 as a result you have object file "NTS"
 
-End with an example of getting some data out of the system or using it for a little demo
 
 ## Running the tests
 Now program has no TUI.
