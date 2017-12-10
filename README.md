@@ -8,10 +8,15 @@ in format %x:%llx (or hex int converted ip address, long long int (64bit) amount
 ### Building & Installing
 should have UNIX like OS, 
 cmake automative tool with version >= 3.7(or change version in CMakeLists.txt)
-```
-cmake ./
-make
-```
+You should also change name of default sniffing interface in CMakeLists.txt(1 line), example:
+    ```
+        set(DEFAULT_IF "enp19s0")
+    ```
+        
+    ```
+      cmake ./ 
+      make
+    ```
 as a result you have object file "NTS"
 
 

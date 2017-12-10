@@ -21,7 +21,14 @@
 /* NTS headers*/
 #include "NTS.h"
 /* macro and definitions */
-#define DEFAULT_IF "enp19s0"
+#ifndef DEFAULT_IF
+#error "Specify default ethernet interface in your machine, example: cmake -DDEFAUT_IF:STRING="enp19s0" ./ "
+#define DEFAULT_IF "enp19s0" /*ethernet,(bus 19 slot 0)
+                               called in linux 4.11.9,
+                               in your local machine 
+                               you need to change this
+                               */
+#endif /* DEFAULT_IF */
 #define GREEN_FOREGROUND "\033[32m"
 #define DEFAULT_FOREGROUND "\033[0m"
 /*global variables*/
