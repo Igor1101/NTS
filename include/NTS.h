@@ -2,6 +2,10 @@
 #define NTS_H
 #include <stdio.h>
 #include <sys/socket.h>
+/* Default inteface */
+#ifndef DEFAULT_IF
+#error "Specify default ethernet interface in your machine in cmake file"
+#endif /* DEFAULT_IF */
 
 /*THIS PROGRAM NAME*/
 #ifndef PROG_NAME
@@ -23,6 +27,8 @@ struct logaddr
     unsigned int ipv4;
     unsigned long long int times;
 };
+char iface[64];/* current full iface name */
+int socketdesc;/*socket*/
 /* Declared info array */
 struct logaddr loginfo[MAX_AMOUNT_OF_ADDRS];
 /* amount of addresses in logaddr*/

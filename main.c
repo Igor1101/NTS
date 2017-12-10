@@ -7,13 +7,12 @@
 #include <sys/socket.h>
 #include <netinet/in.h> /* For SOCK_RAW */
 #include <arpa/inet.h> /* for htons */
-#include <linux/if_packet.h> /* for protocol defs*/
+#include <netpacket/packet.h> /* for protocol defs*/
 #include <net/ethernet.h> /* protocols */
 #include <linux/if_ether.h> /* protocols */
 /* ioctl */
 #include <sys/ioctl.h>
 #include <linux/if.h> /* documented as net/if.h */
-#include <linux/if_packet.h> /* sockaddr low level */
 /* logging info*/
 #include <syslog.h>
 /* ERROR process*/
@@ -21,30 +20,20 @@
 /* NTS headers*/
 #include "NTS.h"
 /* macro and definitions */
-#ifndef DEFAULT_IF
-#error "Specify default ethernet interface in your machine, example: cmake -DDEFAUT_IF:STRING="enp19s0" ./ "
-#define DEFAULT_IF "enp19s0" /*ethernet,(bus 19 slot 0)
-                               called in linux 4.11.9,
-                               in your local machine 
-                               you need to change this
-                               */
-#endif /* DEFAULT_IF */
 #define GREEN_FOREGROUND "\033[32m"
 #define DEFAULT_FOREGROUND "\033[0m"
 /*global variables*/
-    int socketdesc;/*socket*/
     struct sockaddr  saddr;/* address info */
-    unsigned int saddr_size = sizeof saddr;
+    struct sockaddr_in* saddr_conv;/* address info */
+    char addr_conv[32];
+    unsigned int saddr_size = sizeof (struct sockaddr_ll);
     struct ifreq ifinfo; /* Inteface info */
 /* functions */
 void print_received_ip(void)
 {
-    printf( "%s%u:%u:%u:%u", 
+    printf( "%s%s", 
             "\nIP: ",
-            (unsigned char)saddr.sa_data[2],
-            (unsigned char)saddr.sa_data[3],
-            (unsigned char)saddr.sa_data[4],
-            (unsigned char)saddr.sa_data[5]
+            inet_ntop(AF_INET6, &saddr_conv->sin_addr, (char*)&addr_conv, sizeof(addr_conv))
             );
 }
 int init_socket( char* device)
@@ -57,7 +46,7 @@ int init_socket( char* device)
     memset(&ifinfo, 0, sizeof (ifinfo));
     memset(&addr, 0, sizeof (addr));
     /* Try initialize  socket */
-    if((socketf = socket(AF_INET/*AF_PACKET*/, SOCK_RAW, IPPROTO_TCP /*htons(ETH_P_ALL)*/)) == -1)
+    if((socketf = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) == -1)
     {
         fprintf(stderr, "socket create ERROR: %s\n", strerror(errno));
         EXIT
@@ -87,11 +76,12 @@ int init_socket( char* device)
         fprintf(stderr, "ioctl configuring ERROR: %s\n", strerror(errno));
         EXIT
     }
-    addr.sll_family = AF_INET/*AF_PACKET*/;
+    addr.sll_family = AF_PACKET/*AF_PACKET*/;
     addr.sll_ifindex = ifinfo.ifr_ifindex;
+    addr.sll_protocol = htons(ETH_P_ALL);
     if(bind(socketf, (struct sockaddr*)&addr, sizeof(struct sockaddr_ll)) == -1)
     {
-        fprintf(stderr, "bind error %s\n", strerror(errno));
+        fprintf(stderr, "bind error :%s\n", strerror(errno));
     }
 #undef EXIT
     return socketf;
@@ -129,7 +119,7 @@ int main(int argc, char** argv)
         if(recvfrom(socketdesc,
                     NULL, /* received data */
                     0, /* size of received data */
-                    MSG_WAITALL/* just wait for IP info */,
+                    0/*MSG_WAITALL*//* just wait for IP info */,
                     &saddr,\
                     &saddr_size\
                     )
@@ -139,6 +129,7 @@ int main(int argc, char** argv)
         }
         else if(signal_def==0)
         {
+            saddr_conv = (struct sockaddr_in*)&saddr;
             address_add(saddr);
             print_received_ip();
             writelogfile();

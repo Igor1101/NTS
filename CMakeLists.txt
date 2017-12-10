@@ -1,4 +1,4 @@
-set(DEFAULT_IF "enp19s0")
+set(DEFAULT_IF "wlp18s0")
 cmake_minimum_required(VERSION 3.7) 
     set(NTS_CC_FLAGS -ansi -Wall -Os -static)
     project(NTS C)
