@@ -42,7 +42,7 @@ void set_signal_handler(void)
     struct sigaction act;
     sigemptyset(&act.sa_mask);
     act.sa_handler = signal_handler;
-    act.sa_flags = 0;
+    act.sa_flags = SA_RESTART;/* needed by recvmsg*/
     /*Signals*/
     sigaction(SIGHUP, &act, NULL);
     sigaction(SIGINT, &act, NULL);

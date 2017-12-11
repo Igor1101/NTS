@@ -23,20 +23,11 @@ int compare_addresses(const void*a, const void*b)
 }
 
 
-void address_add(struct sockaddr saddr)
+void address_add(struct in_addr saddr)
 {
-    /*convert ipv4 XX:XX:XX:XX into 0xXXXXXXXX */
-    unsigned int ip = (((unsigned char)saddr.sa_data[2])<<24) + 
-        (((unsigned char)saddr.sa_data[3])<<16) +
-        (((unsigned char)saddr.sa_data[4])<<8) +
-        (unsigned char)saddr.sa_data[5];
+    unsigned int ip = saddr.s_addr;
     struct logaddr address;
     address.ipv4 = ip;
-        qsort((void*)&loginfo, 
-                amount_of_logaddr, 
-                sizeof(struct logaddr), 
-                compare_addresses);
-
     /* if saddr in loginfo: */
     void*found = bsearch((void*)&address, 
             (void*)&loginfo, 
@@ -70,10 +61,10 @@ void log_print(void)
     {
         printf("%s %u:%u:%u:%u %s %llu\n", 
                 "IP:",
-                loginfo[item].ipv4>>24,/* FF:00:00:00 */
-                (loginfo[item].ipv4>>16)&0xFF,/* 00:FF:00:00 */
-                (loginfo[item].ipv4>>8)&0xFF,/* 00:00:FF:00 */
-                loginfo[item].ipv4&0xFF,
+                loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
+                (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
+                (loginfo[item].ipv4>>16)&0xFF,/* 00:00:XX:00 */
+                loginfo[item].ipv4>>24,/* 00:00:00:XX */
                 "TIMES:",
                 loginfo[item].times
                 );

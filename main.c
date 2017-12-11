@@ -10,6 +10,7 @@
 #include <netpacket/packet.h> /* for protocol defs*/
 #include <net/ethernet.h> /* protocols */
 #include <linux/if_ether.h> /* protocols */
+#include <linux/ip.h>
 /* ioctl */
 #include <sys/ioctl.h>
 #include <linux/if.h> /* documented as net/if.h */
@@ -24,16 +25,22 @@
 #define DEFAULT_FOREGROUND "\033[0m"
 /*global variables*/
     struct sockaddr  saddr;/* address info */
-    struct sockaddr_in* saddr_conv;/* address info */
-    char addr_conv[32];
+    struct sockaddr_in*  saddr_conv;/* address info */
+    char addr_conv[INET_ADDRSTRLEN];
     unsigned int saddr_size = sizeof (struct sockaddr_ll);
     struct ifreq ifinfo; /* Inteface info */
+    struct iphdr*ipinfo = (struct iphdr*)(buffer + sizeof(struct ethhdr));
 /* functions */
 void print_received_ip(void)
 {
     printf( "%s%s", 
             "\nIP: ",
-            inet_ntop(AF_INET6, &saddr_conv->sin_addr, (char*)&addr_conv, sizeof(addr_conv))
+            inet_ntop(AF_INET, /* AF_PACKET 
+                                   is not suppoted
+                                   by inet_ntop */
+                &saddr_conv->sin_addr, 
+                (char*)&addr_conv, 
+                sizeof(addr_conv))
             );
 }
 int init_socket( char* device)
@@ -46,7 +53,7 @@ int init_socket( char* device)
     memset(&ifinfo, 0, sizeof (ifinfo));
     memset(&addr, 0, sizeof (addr));
     /* Try initialize  socket */
-    if((socketf = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL))) == -1)
+    if((socketf = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_IP))) == -1)
     {
         fprintf(stderr, "socket create ERROR: %s\n", strerror(errno));
         EXIT
@@ -89,6 +96,8 @@ int init_socket( char* device)
 /* main */
 int main(int argc, char** argv)
 {   
+    /* set interface */
+    strcpy(iface, DEFAULT_IF);
     socketdesc = init_socket(DEFAULT_IF);
     /* clear info buffer */
     memset(loginfo, 0, sizeof(loginfo));
@@ -112,25 +121,27 @@ int main(int argc, char** argv)
                                line every print to stdout (defined in NTS.h) 
                                works only if "-debug" arg added
                               */
+            saddr_conv = (struct sockaddr_in*)&ipinfo->saddr;
     while(1)
     {
         /* clear signal info */
         signal_def = 0;
         if(recvfrom(socketdesc,
-                    NULL, /* received data */
-                    0, /* size of received data */
-                    0/*MSG_WAITALL*//* just wait for IP info */,
+                    buffer /* received data */,
+                    sizeof (buffer) /* size of received data */,
+                    0/* MSG_WAITALL *//* just wait for IP info
+                                       with MSG_WAIT it doesn`t work...
+                                       */,
                     &saddr,\
                     &saddr_size\
-                    )
-          )
+                    ) == -1
+         )
         {
             printf("receive ERROR: %s\n", strerror(errno));
         }
         else if(signal_def==0)
         {
-            saddr_conv = (struct sockaddr_in*)&saddr;
-            address_add(saddr);
+            address_add(saddr_conv->sin_addr);
             print_received_ip();
             writelogfile();
         }

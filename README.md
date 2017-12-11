@@ -12,8 +12,10 @@ You should also change name of default sniffing interface in CMakeLists.txt(1 li
     ```
         set(DEFAULT_IF "enp19s0")
     ```
+    and remove old log file 
         
     ```
+      sudo rm /var/log/NTS.log
       cmake ./ 
       make
     ```
