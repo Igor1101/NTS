@@ -4,11 +4,11 @@
 /* process sys signals */
 void signal_handler(int signal)
 {
-    signal_def = signal;
     switch(signal)
     {
         case SIGHUP:
             {
+                writelogfile();
                 fflush(logfile);
                 puts("NTS: SIGHUP");
                 fflush(stdout);
@@ -23,14 +23,14 @@ void signal_handler(int signal)
             }
         case SIGTERM:
             {
+                writelogfile();
                 fclose(logfile);
                 puts("NTS: SIGTERM");
                 fflush(stdout);
-                exit(0);
+                NTS_exit(0);
             }
         default:
             {
-                signal_def = -1;
                 /* Unknown signal*/
                 return;
             }

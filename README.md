@@ -1,4 +1,5 @@
-# NTS (Network Traffic Service)
+# NTS (Network Traffic Service) 
+(partly deprecated information, see --help)
 A daemon which sniffs packets, saves ip addresses and number of incoming packets from each ip to 
 ```
 /var/log/NTS.log
@@ -6,7 +7,8 @@ A daemon which sniffs packets, saves ip addresses and number of incoming packets
 in format %x:%llx (or hex int converted ip address, long long int (64bit) amount of packets).
 
 ### Building & Installing
-should have UNIX like OS, 
+Before upgrading this daemon to a new version, please remove old log file.
+should have LINUX like OS, (it can`t be compiled under BSDs without change because of difference in socket libraries)
 cmake automative tool with version >= 3.7(or change version in CMakeLists.txt)
 You should also change name of default sniffing interface in CMakeLists.txt(1 line), example:
     ```

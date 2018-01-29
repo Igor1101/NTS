@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "NTS.h"
 void openlogfile(void)
 {
@@ -9,30 +10,56 @@ void openlogfile(void)
         logfile = fopen(LOGFILE, "w+");
     }
 }
-unsigned int scanlogfile(void)
+void scanlogfile(void)
 {
     /* return amount of items in logfile */
     unsigned int item=0;
+    unsigned int itemnotcur=0;
     rewind(logfile);
-    while(fscanf(logfile, "%x:%llx",
+    while(fscanf(logfile, "%x:%llx:%s",
                 &loginfo[item].ipv4,
-                &loginfo[item].times) !=EOF)
+                &loginfo[item].times,
+                loginfo[item].iface) != EOF/* Size of iface is not 
+                                              verified in file!!!*/
+            )
     {
-        if(item >= MAX_AMOUNT_OF_ADDRS)break;
-        item++;
+        if(item >= MAX_AMOUNT_OF_ADDRS)break;/*buffer overflow, 
+                                               read what we can read */
+        if(strcmp(iface, loginfo[item].iface)!=0)
+        {
+            lognotcurrent[itemnotcur].ipv4 = loginfo[item].ipv4;
+            lognotcurrent[itemnotcur].times = loginfo[item].times;
+            strcpy(lognotcurrent[itemnotcur].iface, loginfo[item].iface);
+            itemnotcur++;
+        }
+        else
+        { 
+            item++;
+        }
     }
-   return item;
+    amount_of_notcurrent=itemnotcur;
+    amount_of_logaddr=item;
 }
 void writelogfile(void)
 {
+    pthread_mutex_lock(&logaccess);
     unsigned int item;
     /* clear file */
     fclose(logfile);
     logfile = fopen(LOGFILE, "w+");
     for(item=0; item<amount_of_logaddr; item++)
     {
-        fprintf(logfile, "%x:%llx\n", 
+        fprintf(logfile, "%x:%llx:%s\n", 
                 loginfo[item].ipv4,
-                loginfo[item].times);
+                loginfo[item].times,
+                loginfo[item].iface);
     }
+    for(item=0; item<amount_of_notcurrent; item++)
+    {
+        fprintf(logfile, "%x:%llx:%s\n", 
+                lognotcurrent[item].ipv4,
+                lognotcurrent[item].times,
+                lognotcurrent[item].iface);
+    }
+    pthread_mutex_unlock(&logaccess);
 }

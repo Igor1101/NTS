@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "NTS.h"
 
 int compare_addresses(const void*a, const void*b)
@@ -38,6 +39,7 @@ void address_add(struct in_addr saddr)
     {/* write address to array and sort array */
         loginfo[amount_of_logaddr].ipv4 = ip;
         loginfo[amount_of_logaddr].times = 1;
+        strcpy(loginfo[amount_of_logaddr].iface, iface);
         amount_of_logaddr++;
         if(amount_of_logaddr >= MAX_AMOUNT_OF_ADDRS)
         {
@@ -56,17 +58,19 @@ void address_add(struct in_addr saddr)
 void log_print(void)
 {/* print all info(used in debug mode) */
     unsigned int item;
-    printf("%s%u", "\n\n\n\nLOG INFO\nAMOUNT OF ADDRESS: ", amount_of_logaddr);
+    printf("%s%u\n", "\n\n\n\nLOG INFO\nAMOUNT OF ADDRESSES: ", amount_of_logaddr);
     for(item=0; item<amount_of_logaddr; item++)
     {
-        printf("%s %u:%u:%u:%u %s %llu\n", 
+        printf("%s %u:%u:%u:%u %s %llu %s %s\n", 
                 "IP:",
                 loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
                 (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
                 (loginfo[item].ipv4>>16)&0xFF,/* 00:00:XX:00 */
                 loginfo[item].ipv4>>24,/* 00:00:00:XX */
                 "TIMES:",
-                loginfo[item].times
+                loginfo[item].times,
+                "IFACE:",
+                loginfo[item].iface
                 );
     }
 }
