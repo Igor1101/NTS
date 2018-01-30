@@ -61,7 +61,16 @@ void init_nts(char* argv_1)
     arg_recognize(argv_1);
     pid_t NTS_pid;
     /* set communication */
-    pipe(NTS_pipe);
+    if(pipe(to_NTS_pipe)!=0)
+    {
+        puts("pipe creation error");
+        NTS_exit(-1);
+    }
+    if(pipe(from_NTS_pipe)!=0)
+    {
+        puts("pipe creation error");
+        NTS_exit(-1);
+    }
     switch(NTS_pid=fork())
     {
         case -1: {
@@ -72,10 +81,14 @@ void init_nts(char* argv_1)
         default: /* run cli */
                 if(console_is_running==true)
                 {
+                    close(to_NTS_pipe[0]);
+                    close(from_NTS_pipe[1]);
                     NTS_cli(NTS_pid);
                 }
                 _exit(0); /* we are in parent! */
     }
+    close(to_NTS_pipe[1]);
+    close(from_NTS_pipe[0]);
     if(setsid() == -1)
     {
         fprintf(stderr, "ERROR this can`t be leader");

@@ -27,7 +27,9 @@
 #include "NTS.h"
 /* macro and definitions */
 #define MAX_INPUT_SIZE 64
-#define MAX_OUTPUT_SIZE 10240
+#define MAX_OUTPUT_SIZE 256
+#define read_cli read(to_NTS_pipe[0], input_buf, sizeof(input_buf))
+#define write_cli write(from_NTS_pipe[1], output_buf, sizeof(output_buf))
 /*global variables*/
     struct sockaddr  saddr;/* address info */
     struct sockaddr_in*  saddr_conv;/* address info */
@@ -151,7 +153,12 @@ void respond_NTS(void)
     while(1)
     {
         memset(input_buf, 0, sizeof input_buf);
-        read(NTS_pipe[0], input_buf, sizeof(input_buf));
+        read_cli;
+        if(strlen(input_buf) !=0 ) 
+        {
+            puts("CLI COMMAND:");
+            puts(input_buf);
+        }
         if(strcmp(input_buf, "p")/* stop */== 0 
                 && recv_from_ON == true)
         {
@@ -170,6 +177,39 @@ void respond_NTS(void)
             pthread_create(&NTS_recv, NULL, (void*) &recv_thread, NULL);
             recv_from_ON = true;
         }
+        else if(strncmp(input_buf, "w", 1) == 0)
+        {
+            puts("show [ip] running ");
+            unsigned int addr;
+            sscanf(input_buf, "%c %x", input_buf, &addr);
+            printf("searching for address : %x", addr);
+            pthread_mutex_lock(&logaccess);/* wait, untill 
+                                            * array`ll be sorted */
+            puts("pthread locked");
+            /* search in current iface */
+            void*found = bsearch((void*)&addr, 
+                        (void*)&loginfo, 
+                        amount_of_logaddr, 
+                        sizeof(struct logaddr),
+                        compare_addresses);
+            puts("bsearch stopped");
+            if(found != NULL)
+            {
+                puts("addr found");
+                printf("RESULT: %llx", ((struct logaddr*)found) -> times
+                /* only for current iface */);
+                sprintf(output_buf, "%llx", ((struct logaddr*)found) -> times);
+                puts("addr converted");
+            }
+            else
+            {
+                puts("ip addr not found");
+                strcpy(output_buf, "0\n");
+            }
+            pthread_mutex_unlock(&logaccess);
+            write(from_NTS_pipe[1], output_buf, strlen(output_buf));
+        }
+
     }
 }
 /* main */

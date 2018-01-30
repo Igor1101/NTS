@@ -61,7 +61,8 @@ unsigned char buffer[(sizeof(struct ethhdr) + sizeof(struct iphdr))];
 /* console indicator (if 1, then console will run )*/
 bool console_is_running;
 /* NTS PIPE between cli and NTS*/
-int NTS_pipe[2];
+int to_NTS_pipe[2];
+int from_NTS_pipe[2];
 /* functions */
 /* daemon INIT */
 void init_nts(char* argv_1);
@@ -81,5 +82,7 @@ void writelogfile(void);
 void log_print(void);
 /* CLI !!! */
 void NTS_cli(pid_t NTS_pid);
+/* for binary op */
+int compare_addresses(const void *a, const void *b);
 #endif /* NTS_H */
 
