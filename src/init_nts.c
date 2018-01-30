@@ -22,7 +22,6 @@ void arg_recognize(char* argv_1)
 \n\tRUN THIS AS ROOT!!!\
 \nUsage: NTS [option]\
 \n\t--console : run console also\
-\n\t--consoleonly : run console, don`t run service\
 \n\t--debug : switch service to debug mode\
 \n\t--help : print help and exit\
 \n\t if  no option specified, run service\
