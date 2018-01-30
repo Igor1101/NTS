@@ -1,5 +1,4 @@
 # NTS (Network Traffic Service) 
-(partly deprecated information, see --help)
 A daemon which sniffs packets, saves ip addresses and number of incoming packets from each ip to 
 ```
 /var/log/NTS.log
@@ -25,13 +24,36 @@ as a result you have object file "NTS"
 
 
 ### Running the tests
-Now program has no TUI.
-if you`d like to see the process of receiving/saving IPs(whatever),
-   run NTS in debug mode
+How to work with it?
    ``` 
-   sudo ./NTS -debug
+    #Prints useful information and exits:
+    sudo ./NTS --help
+    #starts console:
+    sudo ./NTS --console
+    #starts console and outputs debug information, be more verbose
+    sudo ./NTS --debug
+    #just start
+    sudo ./NTS
    ```
-   in debug mode NTS reopens its stdout to /dev/tty8, every ip received will be printed in real time.
-if you`d like to see all already saved information in human readable mode, hit keys ^C (CONTROL-C) or send SIGINT when running in debug mode in /dev/tty8.
+   in debug mode NTS reopens its stdout to /dev/console, every ip received will be printed in real time.
+### Console
+```
+#if any command is not understood:
+[CMD] --help
+#prints status info for [iface] or for all interfaces.
+-> stat [optional iface]
+#prints number of received packets for appropriate address(for ex 255.255.255.255)
+-> show 255.255.255.255
+#select iface to sniff(can be used at any time)
+-> select [iface]
+#start sniffing
+-> start
+#stop 
+-> stop
+#exit from console (dont stop NTS)
+-> exit
+-> quit
+
+```
 ### Saving info into file (/var/log/NTS.log)
-Daemon updates information in logfile after it receives SIGHUP or SIGTERM.
+Daemon updates information in logfile after it receives SIGHUP or SIGTERM and when you type in console command stat[iface].
