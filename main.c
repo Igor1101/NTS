@@ -178,38 +178,48 @@ void respond_NTS(void)
             recv_from_ON = true;
         }
         else if(strncmp(input_buf, "w", 1) == 0)
-        {
-            puts("show [ip] running ");
+        {/* show */
             unsigned int addr;
             sscanf(input_buf, "%c %x", input_buf, &addr);
-            printf("searching for address : %x", addr);
             pthread_mutex_lock(&logaccess);/* wait, untill 
                                             * array`ll be sorted */
-            puts("pthread locked");
             /* search in current iface */
             void*found = bsearch((void*)&addr, 
                         (void*)&loginfo, 
                         amount_of_logaddr, 
                         sizeof(struct logaddr),
                         compare_addresses);
-            puts("bsearch stopped");
             if(found != NULL)
             {
-                puts("addr found");
                 printf("RESULT: %llx", ((struct logaddr*)found) -> times
                 /* only for current iface */);
                 sprintf(output_buf, "%llx", ((struct logaddr*)found) -> times);
-                puts("addr converted");
             }
             else
             {
-                puts("ip addr not found");
                 strcpy(output_buf, "0\n");
             }
             pthread_mutex_unlock(&logaccess);
             write(from_NTS_pipe[1], output_buf, strlen(output_buf));
         }
-
+        else if(strncmp(input_buf, "l", 1) == 0)/* select iface*/
+        { /*stop recv*/
+            if(recv_from_ON == true)
+            {
+                pthread_mutex_lock(&logaccess);
+                pthread_cancel(NTS_recv);
+                pthread_mutex_unlock(&logaccess);
+            }
+            sscanf(input_buf, "%c %s", input_buf, iface);
+            writelogfile();
+            scanlogfile();
+            socketdesc = init_socket(iface);
+            memset(loginfo, 0, sizeof(loginfo));
+            if(recv_from_ON == true)
+            {
+                pthread_create(&NTS_recv, NULL, (void*) &recv_thread, NULL);
+            }
+        }
     }
 }
 /* main */
