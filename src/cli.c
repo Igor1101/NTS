@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -7,11 +8,11 @@
 #include "NTS.h"
 #define MAX_CMD_SIZE 0x10
 #define MAX_ARG_SIZE 0x50
-#define MAX_NTS 256
+#define MAX_NTS 128
 #define START   "s\0"
 #define STOP   "p\0"
 #define SHOW   "w"
-#define SELECT   "l"
+#define SELECT "l"
 #define STAT   "a"
 /* start cli session
  ***********************
@@ -28,6 +29,24 @@
  exit           |==> CMD internal commands
  [CMD]  --help -|
  */
+void print_stat(char * arg)
+{
+    logfile=fopen(LOGFILE, "r");
+    if(arg!=NULL && strlen(arg)!=0)
+    {
+        strcpy(iface, arg);
+        scanlogfile();
+        log_print();
+    }
+    else
+    {
+        strcpy(iface, DEFAULT_IF);
+        scanlogfile();
+        all_log_print();
+    }
+
+}
+
 void NTS_cli(pid_t NTS_pid)
 {
     puts("Starting CLI");
@@ -112,6 +131,30 @@ void NTS_cli(pid_t NTS_pid)
                 write(to_NTS_pipe[1], str, strlen(str)+1);
             }
         } 
+        else if( cmd != NULL && strcmp(cmd, "stat")==0)
+        {
+            if(arg != NULL && strcmp(arg, "--help")==0)
+            {
+                printf("usage: stat [iface] ;  \
+ iface is optional, write status info in format xx.xx.xx.xx:[times]\\n\n\
+ example: \n stat");
+            }
+            else 
+            {
+                char str[MAX_CMD_SIZE+MAX_ARG_SIZE];
+                sprintf(str, "%s %s\n", STAT, arg);
+                write(to_NTS_pipe[1], str, strlen(str)+1);
+                read(from_NTS_pipe[0], from_NTS, sizeof from_NTS);
+                if(strcmp("s", from_NTS))/* 's' means success*/
+                {
+                    print_stat(arg);
+                }
+            }
+        } 
+        else if( cmd != NULL && (strcmp(cmd, "exit")==0||strcmp(cmd, "quit")==0))
+        {
+            NTS_exit(0);
+        }
     }
 }
 

@@ -27,7 +27,7 @@
 #include "NTS.h"
 /* macro and definitions */
 #define MAX_INPUT_SIZE 64
-#define MAX_OUTPUT_SIZE 256
+#define MAX_OUTPUT_SIZE 128
 #define read_cli read(to_NTS_pipe[0], input_buf, sizeof(input_buf))
 #define write_cli write(from_NTS_pipe[1], output_buf, sizeof(output_buf))
 /*global variables*/
@@ -214,12 +214,21 @@ void respond_NTS(void)
             writelogfile();
             scanlogfile();
             socketdesc = init_socket(iface);
-            memset(loginfo, 0, sizeof(loginfo));
             if(recv_from_ON == true)
             {
                 pthread_create(&NTS_recv, NULL, (void*) &recv_thread, NULL);
             }
         }
+        else if(strncmp(input_buf, "a", 1) == 0)/* stat iface*/
+        { /* update log file and write answer*/
+            pthread_mutex_lock(&logaccess);
+            writelogfile();
+            fflush(logfile);
+            pthread_mutex_unlock(&logaccess);
+            write(from_NTS_pipe[1], "s\n", 2 );
+            puts("successfully updated");
+        }
+
     }
 }
 /* main */

@@ -42,7 +42,6 @@ void scanlogfile(void)
 }
 void writelogfile(void)
 {
-    pthread_mutex_lock(&logaccess);
     unsigned int item;
     /* clear file */
     fclose(logfile);
@@ -61,5 +60,4 @@ void writelogfile(void)
                 lognotcurrent[item].times,
                 lognotcurrent[item].iface);
     }
-    pthread_mutex_unlock(&logaccess);
 }

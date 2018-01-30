@@ -80,6 +80,7 @@ void scanlogfile(void);
 void writelogfile(void);
 /* used in debug mode; print all address information */
 void log_print(void);
+void all_log_print(void);
 /* CLI !!! */
 void NTS_cli(pid_t NTS_pid);
 /* for binary op */
