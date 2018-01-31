@@ -60,6 +60,7 @@ void NTS_cli(pid_t NTS_pid)
         memset(cmd, 0, sizeof cmd);
         memset(arg, 0, sizeof arg);
         memset(from_NTS, 0, sizeof from_NTS);
+        sleep(1);/* useful, when running from scripts */
         printf("-> ");
         fgets(input, MAX_CMD_SIZE+MAX_ARG_SIZE, stdin);
         sscanf(input,"%s%s", cmd, arg);
