@@ -38,21 +38,23 @@ How to work with it?
    in debug mode NTS reopens its stdout to /dev/console, every ip received will be printed in real time.
 ### Console
 ```
-#if any command is not understood:
+# if any command is not understood:
 [CMD] --help
-#prints status info for [iface] or for all interfaces.
+# prints status info for [iface] or for all interfaces.
 -> stat [optional iface]
-#prints number of received packets for appropriate address(for ex 255.255.255.255)
+# prints number of received packets for appropriate address(for ex 255.255.255.255)
 -> show 255.255.255.255
-#select iface to sniff(can be used at any time)
+# select iface to sniff(can be used at any time)
 -> select [iface]
-#start sniffing
+# start sniffing
 -> start
-#stop 
+# stop 
 -> stop
-#exit from console (dont stop NTS)
+# exit from console (dont stop NTS)
 -> exit
 -> quit
+### output command [stat] in  less format and exit:
+-> less
 
 ```
 ### Saving info into file (/var/log/NTS.log)

@@ -133,8 +133,10 @@ void recv_thread(void)
         }
         else 
         {
-            if(/*(saddr.sll_pkttype == PACKET_HOST)||*/
-                (saddr.sll_pkttype == PACKET_BROADCAST)||
+            if(/*(saddr.sll_pkttype == PACKET_HOST)||*//*
+                                                        * local address 
+                                                        * */
+                /*(saddr.sll_pkttype == PACKET_BROADCAST)||*/
                 (saddr.sll_pkttype == PACKET_MULTICAST)||
                 (saddr.sll_pkttype == PACKET_OTHERHOST)||
                 (saddr.sll_pkttype == PACKET_OUTGOING)
