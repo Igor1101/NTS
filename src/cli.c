@@ -57,12 +57,6 @@ void print_stat(char * arg)
 void NTS_cli(pid_t NTS_pid)
 {
     puts("Starting CLI");
-    /* disable SIGINT */
-    struct sigaction cli_sig;
-    sigemptyset(&cli_sig.sa_mask);
-    cli_sig.sa_handler = signal_handler;
-    /*Signals*/
-    sigaction(SIGINT, &cli_sig, NULL);
     char cmd[MAX_CMD_SIZE];
     char arg[MAX_ARG_SIZE];
     char input[MAX_ARG_SIZE+MAX_CMD_SIZE];
