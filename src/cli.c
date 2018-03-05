@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
@@ -32,7 +33,13 @@
 void print_stat(char * arg)
 {
     logfile=fopen(LOGFILE, "r");
-    if(arg!=NULL && strlen(arg)!=0)
+    if(arg!=NULL && strcmp(arg, "less") == 0)
+    {
+        strcpy(iface, DEFAULT_IF);
+        scanlogfile();
+        all_log_print("less");
+    }
+    else if(arg!=NULL && strlen(arg)!=0)
     {
         strcpy(iface, arg);
         scanlogfile();
@@ -42,7 +49,7 @@ void print_stat(char * arg)
     {
         strcpy(iface, DEFAULT_IF);
         scanlogfile();
-        all_log_print();
+        all_log_print(NULL);
     }
 
 }
@@ -50,6 +57,12 @@ void print_stat(char * arg)
 void NTS_cli(pid_t NTS_pid)
 {
     puts("Starting CLI");
+    /* disable SIGINT */
+    struct sigaction cli_sig;
+    sigemptyset(&cli_sig.sa_mask);
+    cli_sig.sa_handler = signal_handler;
+    /*Signals*/
+    sigaction(SIGINT, &cli_sig, NULL);
     char cmd[MAX_CMD_SIZE];
     char arg[MAX_ARG_SIZE];
     char input[MAX_ARG_SIZE+MAX_CMD_SIZE];
@@ -60,7 +73,9 @@ void NTS_cli(pid_t NTS_pid)
         memset(cmd, 0, sizeof cmd);
         memset(arg, 0, sizeof arg);
         memset(from_NTS, 0, sizeof from_NTS);
-        sleep(1);/* useful, when running from scripts */
+        usleep(9999);/* BSD\SYSTEM V function
+                      * useful, when running from scripts 
+                      * */
         printf("-> ");
         fgets(input, MAX_CMD_SIZE+MAX_ARG_SIZE, stdin);
         sscanf(input,"%s%s", cmd, arg);
@@ -149,6 +164,27 @@ void NTS_cli(pid_t NTS_pid)
                 if(strcmp("s", from_NTS))/* 's' means success*/
                 {
                     print_stat(arg);
+                }
+            }
+        } 
+        else if( cmd != NULL && strcmp(cmd, "less")==0)
+        {
+            if(arg != NULL && strcmp(arg, "--help")==0)
+            {
+                printf("usage: less ;  \
+ same as stat [no args], but put all output into less \
+ exit after less exited\
+ example: \n stat");
+            }
+            else 
+            {
+                char str[MAX_CMD_SIZE+MAX_ARG_SIZE];
+                sprintf(str, "%s %s\n", STAT, arg);
+                write(to_NTS_pipe[1], str, strlen(str)+1);
+                read(from_NTS_pipe[0], from_NTS, sizeof from_NTS);
+                if(strcmp("s", from_NTS))/* 's' means success*/
+                {
+                    print_stat("less");
                 }
             }
         } 

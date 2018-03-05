@@ -43,7 +43,11 @@ void address_add(struct in_addr saddr)
         amount_of_logaddr++;
         if(amount_of_logaddr >= MAX_AMOUNT_OF_ADDRS)
         {
-            exit(-1);/* static memory overflow */
+            perror("STATIC MEMORY OVERFLOW... exiting");
+            pthread_mutex_lock(&logfileaccess);
+            writelogfile();
+            pthread_mutex_unlock(&logfileaccess);
+            NTS_exit(-1);/* static memory overflow */
         }
         qsort((void*)&loginfo, 
                 amount_of_logaddr, 
@@ -55,57 +59,4 @@ void address_add(struct in_addr saddr)
         ((struct logaddr*)found) -> times++;
     }
 }
-void log_print(void)
-{/* print all info(used in debug mode) */
-    unsigned int item;
-    printf("%s%u\n", "\n\n\n\nLOG INFO\nAMOUNT OF ADDRESSES: ", amount_of_logaddr);
-    for(item=0; item<amount_of_logaddr; item++)
-    {
-        printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
-                "IP:",
-                loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
-                (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
-                (loginfo[item].ipv4>>16)&0xFF,/* 00:00:XX:00 */
-                loginfo[item].ipv4>>24,/* 00:00:00:XX */
-                "TIMES:",
-                loginfo[item].times,
-                "IFACE:",
-                loginfo[item].iface
-                );
-    }
-}
-void all_log_print(void)
-{/* print all info(used in debug mode) 
-    for all other ifaces*/
-    unsigned int item;
-    printf("%s%u\n", "\n\n\n\nLOG INFO\nAMOUNT OF ADDRESSES: ", amount_of_logaddr);
-    for(item=0; item<amount_of_logaddr; item++)
-    {
-        printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
-                "IP:",
-                loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
-                (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
-                (loginfo[item].ipv4>>16)&0xFF,/* 00:00:XX:00 */
-                loginfo[item].ipv4>>24,/* 00:00:00:XX */
-                "TIMES:",
-                loginfo[item].times,
-                "IFACE:",
-                loginfo[item].iface
-                );
-    }
-    for(item=0; item<amount_of_notcurrent; item++)
-    {
-        printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
-                "IP:",
-                lognotcurrent[item].ipv4&0xFF,/* XX:00:00:00 */
-                (lognotcurrent[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
-                (lognotcurrent[item].ipv4>>16)&0xFF,/* 00:00:XX:00 */
-                lognotcurrent[item].ipv4>>24,/* 00:00:00:XX */
-                "TIMES:",
-                lognotcurrent[item].times,
-                "IFACE:",
-                lognotcurrent[item].iface
-                );
-    }
 
-}

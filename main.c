@@ -31,7 +31,7 @@
 #define read_cli read(to_NTS_pipe[0], input_buf, sizeof(input_buf))
 #define write_cli write(from_NTS_pipe[1], output_buf, sizeof(output_buf))
 /*global variables*/
-    struct sockaddr  saddr;/* address info */
+    struct sockaddr_ll  saddr;/* address info */
     struct sockaddr_in*  saddr_conv;/* address info */
     char addr_conv[INET_ADDRSTRLEN];
     unsigned int saddr_size = sizeof (struct sockaddr_ll);
@@ -124,7 +124,7 @@ void recv_thread(void)
                     0/* MSG_WAITALL *//* just wait for IP info
                                        with MSG_WAIT it doesn`t work...
                                        */,
-                    &saddr,\
+                    (struct sockaddr*)&saddr,\
                     &saddr_size\
                     ) == -1
          )
@@ -133,13 +133,21 @@ void recv_thread(void)
         }
         else 
         {
-            pthread_mutex_lock(&logaccess);
-            address_add(saddr_conv->sin_addr);
-            pthread_mutex_unlock(&logaccess);
-            print_received_ip();
+            if(/*(saddr.sll_pkttype == PACKET_HOST)||*/
+                (saddr.sll_pkttype == PACKET_BROADCAST)||
+                (saddr.sll_pkttype == PACKET_MULTICAST)||
+                (saddr.sll_pkttype == PACKET_OTHERHOST)||
+                (saddr.sll_pkttype == PACKET_OUTGOING)
+                    )
+            {
+                pthread_mutex_lock(&logaccess);
+                address_add(saddr_conv->sin_addr);
+                pthread_mutex_unlock(&logaccess);
+                print_received_ip();
+            }
         }
     }
-    /* this thread NEVER die itself*/
+    /* this thread NEVER die itself */
 }
 
 
@@ -149,6 +157,7 @@ void respond_NTS(void)
     char output_buf[MAX_OUTPUT_SIZE];
     bool recv_from_ON=false;
     pthread_mutex_init(&logaccess, NULL);
+    pthread_mutex_init(&logfileaccess, NULL);
     puts("respond NTS running");
     while(1)
     {
@@ -193,7 +202,7 @@ void respond_NTS(void)
             {
                 printf("RESULT: %llx", ((struct logaddr*)found) -> times
                 /* only for current iface */);
-                sprintf(output_buf, "%llx", ((struct logaddr*)found) -> times);
+                sprintf(output_buf, "%llu", ((struct logaddr*)found) -> times);
             }
             else
             {
@@ -211,7 +220,9 @@ void respond_NTS(void)
                 pthread_mutex_unlock(&logaccess);
             }
             sscanf(input_buf, "%c %s", input_buf, iface);
+            pthread_mutex_lock(&logfileaccess);
             writelogfile();
+            pthread_mutex_unlock(&logfileaccess);
             scanlogfile();
             socketdesc = init_socket(iface);
             if(recv_from_ON == true)
@@ -222,8 +233,10 @@ void respond_NTS(void)
         else if(strncmp(input_buf, "a", 1) == 0)/* stat iface*/
         { /* update log file and write answer*/
             pthread_mutex_lock(&logaccess);
+            pthread_mutex_lock(&logfileaccess);
             writelogfile();
             fflush(logfile);
+            pthread_mutex_unlock(&logfileaccess);
             pthread_mutex_unlock(&logaccess);
             write(from_NTS_pipe[1], "s\n", 2 );
             puts("successfully updated");

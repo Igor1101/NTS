@@ -9,8 +9,10 @@ void signal_handler(int signal)
         case SIGHUP:
             {
                 pthread_mutex_lock(&logaccess);
+                pthread_mutex_lock(&logfileaccess);
                 writelogfile();
                 fflush(logfile);
+                pthread_mutex_unlock(&logfileaccess);
                 pthread_mutex_unlock(&logaccess);
                 puts("NTS: SIGHUP");
                 fflush(stdout);
@@ -26,6 +28,7 @@ void signal_handler(int signal)
         case SIGTERM:
             {
                 pthread_mutex_lock(&logaccess);
+                pthread_mutex_lock(&logfileaccess);
                 writelogfile();
                 fclose(logfile);
                 puts("NTS: SIGTERM");

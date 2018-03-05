@@ -102,7 +102,7 @@ void init_nts(char* argv_1)
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
         stdout = fopen("/dev/null", "w+");
-	    stderr = fopen("/dev/null", "w+");
+	    /*stderr = fopen("/dev/null", "w+");*/
     }
     stdin = fopen("/dev/null", "r");
     chdir("/");

@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.7)
     set(NTS_CC_FLAGS  -ansi -Wall -Os -static)
     set(NTS_LD_FLAGS  -pthread)
     project(NTS C)
-    add_definitions(-D_XOPEN_SOURCE=700 -D DEFAULT_IF=\\"${DEFAULT_IF}\\")
+    add_definitions(-D_XOPEN_SOURCE=700 
+        -D _DEFAULT_SOURCE # for BSD extensions
+        -D DEFAULT_IF=\\"${DEFAULT_IF}\\")
     aux_source_directory(${CMAKE_CURRENT_SOURCE_DIR}/src NTS_SOURCE_FILES)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
     set(INCLUDE_DIRECTORIES_BEFORE ON)

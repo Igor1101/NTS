@@ -21,8 +21,8 @@
     "/dev/console"
 #define MAX_IFACE_LEN 64
 #define MAX_AMOUNT_OF_ADDRS/*program doesn`t use
-                             memory allocation*/10240
-/* 10K addresses, I`m sure, that`s more than enough */
+                             memory allocation*/1024000
+/* 1M addresses, I`m sure, that`s more than enough */
 #define GREEN_FOREGROUND "\033[32m"
 #define DEFAULT_FOREGROUND "\033[0m"
 #define setfor printf(GREEN_FOREGROUND);\
@@ -44,6 +44,11 @@ struct logaddr
 /* determines, whether logaddr 
  * arrays accessible in main()*/
 pthread_mutex_t logaccess;
+
+/* determines, whether logfile
+ * accessible */
+pthread_mutex_t logfileaccess;
+
 char iface[MAX_IFACE_LEN];/* current full iface name */
 int socketdesc;/*socket*/
 /* Declared info array for current iface*/
@@ -80,7 +85,7 @@ void scanlogfile(void);
 void writelogfile(void);
 /* used in debug mode; print all address information */
 void log_print(void);
-void all_log_print(void);
+void all_log_print(char *arg);
 /* CLI !!! */
 void NTS_cli(pid_t NTS_pid);
 /* for binary op */
