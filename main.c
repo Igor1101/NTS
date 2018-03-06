@@ -1,3 +1,7 @@
+/* 
+ * (c) 2018 Igor Muravyov
+ * All rights reserved
+ */
 /* NETWORK TRAFFIC SERVICE */
 #include <stdbool.h>
 #include <stdio.h>
