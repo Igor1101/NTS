@@ -174,7 +174,7 @@ void respond_NTS(void)
             puts("CLI COMMAND:");
             puts(input_buf);
         }
-        if(strcmp(input_buf, "p")/* stop */== 0 
+        if(strcmp(input_buf, STOP)/* stop */== 0 
                 && recv_from_ON == true)
         {
             puts("closing recvfrom");
@@ -185,14 +185,14 @@ void respond_NTS(void)
             pthread_mutex_unlock(&logaccess);
             recv_from_ON = false;
         }
-        else if(strcmp(input_buf, "s")/* start */== 0 
+        else if(strcmp(input_buf, START)/* start */== 0 
                 && recv_from_ON == false)
         {
             puts("opening recvfrom");
             pthread_create(&NTS_recv, NULL, (void*) &recv_thread, NULL);
             recv_from_ON = true;
         }
-        else if(strncmp(input_buf, "w", 1) == 0)
+        else if(strncmp(input_buf, SHOW, 1) == 0)
         {/* show */
             unsigned int addr;
             sscanf(input_buf, "%c %x", input_buf, &addr);
@@ -217,7 +217,7 @@ void respond_NTS(void)
             pthread_mutex_unlock(&logaccess);
             write(from_NTS_pipe[1], output_buf, strlen(output_buf));
         }
-        else if(strncmp(input_buf, "l", 1) == 0)/* select iface*/
+        else if(strncmp(input_buf, SELECT, 1) == 0)/* select iface*/
         { /*stop recv*/
             if(recv_from_ON == true)
             {
@@ -236,7 +236,7 @@ void respond_NTS(void)
                 pthread_create(&NTS_recv, NULL, (void*) &recv_thread, NULL);
             }
         }
-        else if(strncmp(input_buf, "a", 1) == 0)/* stat iface*/
+        else if(strncmp(input_buf, STAT, 1) == 0)/* stat iface*/
         { /* update log file and write answer*/
             pthread_mutex_lock(&logaccess);
             pthread_mutex_lock(&logfileaccess);

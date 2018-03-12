@@ -31,6 +31,13 @@
                 fprintf(stderr, DEFAULT_FOREGROUND);
 #define NTS_exit(x)     resfor;\
                         exit(x);
+/* cli communication */
+#define START  "a"
+#define STOP   "b"
+#define SHOW   "c"
+#define SELECT "d"
+#define STAT   "e"
+
 /* Variables */
 /* IP info Logfile */
 FILE* logfile;

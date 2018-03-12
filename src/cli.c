@@ -10,11 +10,6 @@
 #define MAX_CMD_SIZE 0x10
 #define MAX_ARG_SIZE 0x50
 #define MAX_NTS 128
-#define START   "s\0"
-#define STOP   "p\0"
-#define SHOW   "w"
-#define SELECT "l"
-#define STAT   "a"
 /* start cli session
  ***********************
  *       NTS  CLI      *
