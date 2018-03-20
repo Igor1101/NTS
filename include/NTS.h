@@ -41,12 +41,13 @@
 /* Variables */
 /* IP info Logfile */
 FILE* logfile;
-/* info structure*/
+/* info structure */
 struct logaddr
 {
     unsigned int ipv4;
-    unsigned long long int times;
+    unsigned long long int times;/* amount */
     char iface[MAX_IFACE_LEN];
+    time_t timeSinceEpoch;
 };
 /* determines, whether logaddr 
  * arrays accessible in main()*/

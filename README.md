@@ -1,9 +1,9 @@
 # NTS (Network Traffic Service) 
-A daemon which sniffs packets, saves ip addresses and number of incoming packets from each ip to 
+A daemon which sniffs packets, saves ip addresses, number of incoming packets from each ip, last time of transmitted data to 
 ```
 /var/log/NTS.log
 ```
-in format %x:%llx (or hex int converted ip address, long long int (64bit) amount of packets).
+in format %x:%llx:%lx:%s (or hex int converted ip address, long long int (64bit) amount of packets), time_t time, %s interface
 
 ### Building & Installing
 Before upgrading this daemon to a new version, please remove old log file.
@@ -37,23 +37,37 @@ How to work with it?
    ```
    in debug mode NTS reopens its stdout to /dev/console, every ip received will be printed in real time.
 ### Console
-```
 # if any command is not understood:
+```
 [CMD] --help
+```
 # prints status info for [iface] or for all interfaces.
+```
 -> stat [optional iface]
+```
 # prints number of received packets for appropriate address(for ex 255.255.255.255)
+```
 -> show 255.255.255.255
+```
 # select iface to sniff(can be used at any time)
+```
 -> select [iface]
+```
 # start sniffing
+```
 -> start
+```
 # stop 
+```
 -> stop
+```
 # exit from console (dont stop NTS)
+```
 -> exit
 -> quit
-### output command [stat] in  less format and exit:
+```
+### NEW!!! output command [stat] in  less format and exit:
+```
 -> less
 
 ```

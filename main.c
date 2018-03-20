@@ -46,7 +46,8 @@
 void respond_NTS(void);
 void print_received_ip(void)
 {
-    printf( "%s%s IFACE: %s", 
+    time_t current=time(NULL);
+    printf( "%s%s IFACE: %s %s %s", 
             "\nIP: ",
             inet_ntop(AF_INET, /* AF_PACKET 
                                 *  is not suppoted
@@ -54,7 +55,9 @@ void print_received_ip(void)
                 &saddr_conv->sin_addr, 
                 (char*)&addr_conv, 
                 sizeof(addr_conv)),
-                iface
+                iface,
+                "LAST TIME:",
+                asctime(localtime(&current))
             );
 }
 int init_socket( char* device)

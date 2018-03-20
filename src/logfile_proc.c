@@ -16,10 +16,12 @@ void scanlogfile(void)
     unsigned int item=0;
     unsigned int itemnotcur=0;
     rewind(logfile);
-    while(fscanf(logfile, "%x:%llx:%s",
+    while(fscanf(logfile, "%x:%llx:%lx:%s\n",
                 &loginfo[item].ipv4,
                 &loginfo[item].times,
-                loginfo[item].iface) != EOF/* Size of iface is not 
+                &loginfo[item].timeSinceEpoch,
+                loginfo[item].iface
+                ) != EOF/* Size of iface is not 
                                               verified in file!!!*/
             )
     {
@@ -48,16 +50,18 @@ void writelogfile(void)
     logfile = fopen(LOGFILE, "w+");
     for(item=0; item<amount_of_logaddr; item++)
     {
-        fprintf(logfile, "%x:%llx:%s\n", 
+        fprintf(logfile, "%x:%llx:%lx:%s\n", 
                 loginfo[item].ipv4,
                 loginfo[item].times,
+                loginfo[item].timeSinceEpoch,
                 loginfo[item].iface);
     }
     for(item=0; item<amount_of_notcurrent; item++)
     {
-        fprintf(logfile, "%x:%llx:%s\n", 
+        fprintf(logfile, "%x:%llx:%lx:%s\n", 
                 lognotcurrent[item].ipv4,
                 lognotcurrent[item].times,
+                loginfo[item].timeSinceEpoch,
                 lognotcurrent[item].iface);
     }
 }

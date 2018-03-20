@@ -28,7 +28,7 @@ void all_log_print(char * arg)
                 amount_of_logaddr);
         for(item=0; item<amount_of_logaddr; item++)
         {
-            printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
+            printf("%s %u.%u.%u.%u %s %llu %s %s %s %s \n", 
                     "IP:",
                     loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
                     (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
@@ -37,12 +37,14 @@ void all_log_print(char * arg)
                     "TIMES:",
                     loginfo[item].times,
                     "IFACE:",
-                    loginfo[item].iface
+                    loginfo[item].iface,
+                    "LAST TIME:",
+                    asctime(localtime(&loginfo[item].timeSinceEpoch))
                     );
         }
         for(item=0; item<amount_of_notcurrent; item++)
         {
-            printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
+            printf("%s %u.%u.%u.%u %s %llu %s %s %s %s \n", 
                     "IP:",
                     lognotcurrent[item].ipv4&0xFF,/* XX:00:00:00 */
                     (lognotcurrent[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
@@ -51,7 +53,9 @@ void all_log_print(char * arg)
                     "TIMES:",
                     lognotcurrent[item].times,
                     "IFACE:",
-                    lognotcurrent[item].iface
+                    lognotcurrent[item].iface,
+                    "LAST TIME:",
+                    asctime(localtime(&loginfo[item].timeSinceEpoch))
                     );
         }
         if(arg != NULL)
@@ -82,7 +86,7 @@ void log_print(void)
     printf("%s%u\n", "\n\n\n\nLOG INFO\nAMOUNT OF ADDRESSES: ", amount_of_logaddr);
     for(item=0; item<amount_of_logaddr; item++)
     {
-        printf("%s %u.%u.%u.%u %s %llu %s %s\n", 
+        printf("%s %u.%u.%u.%u %s %llu %s %s %s %s\n", 
                 "IP:",
                 loginfo[item].ipv4&0xFF,/* XX:00:00:00 */
                 (loginfo[item].ipv4>>8)&0xFF,/* 00:XX:00:00 */
@@ -91,7 +95,9 @@ void log_print(void)
                 "TIMES:",
                 loginfo[item].times,
                 "IFACE:",
-                loginfo[item].iface
+                loginfo[item].iface,
+                "LAST TIME:",
+                asctime(localtime(&loginfo[item].timeSinceEpoch))
                 );
     }
 }

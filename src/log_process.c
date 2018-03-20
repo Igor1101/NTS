@@ -26,6 +26,7 @@ int compare_addresses(const void*a, const void*b)
 
 void address_add(struct in_addr saddr)
 {
+    time_t timeSinceEpoch=time(NULL);
     unsigned int ip = saddr.s_addr;
     struct logaddr address;
     address.ipv4 = ip;
@@ -37,6 +38,7 @@ void address_add(struct in_addr saddr)
             compare_addresses);
     if(found == NULL)
     {/* write address to array and sort array */
+        loginfo[amount_of_logaddr].timeSinceEpoch = timeSinceEpoch;
         loginfo[amount_of_logaddr].ipv4 = ip;
         loginfo[amount_of_logaddr].times = 1;
         strcpy(loginfo[amount_of_logaddr].iface, iface);
@@ -57,6 +59,9 @@ void address_add(struct in_addr saddr)
     else
     {/* increase amount of times */
         ((struct logaddr*)found) -> times++;
+     /* write last packet sniffed time */
+        ((struct logaddr*)found) -> timeSinceEpoch = 
+            timeSinceEpoch;
     }
 }
 
