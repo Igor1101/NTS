@@ -37,11 +37,11 @@ How to work with it?
    ```
    in debug mode NTS reopens its stdout to /dev/console, every ip received will be printed in real time.
 ### Console
-# if any command is not understood:
+### if any command is not understood:
 ```
 [CMD] --help
 ```
-# prints status info for [iface] or for all interfaces.
+#### prints status info for [iface] or for all interfaces.
 ```
 -> stat [optional iface]
 ```
