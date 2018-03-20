@@ -45,23 +45,23 @@ How to work with it?
 ```
 -> stat [optional iface]
 ```
-# prints number of received packets for appropriate address(for ex 255.255.255.255)
+#### prints number of received packets for appropriate address(for ex 255.255.255.255)
 ```
 -> show 255.255.255.255
 ```
-# select iface to sniff(can be used at any time)
+#### select iface to sniff(can be used at any time)
 ```
 -> select [iface]
 ```
-# start sniffing
+#### start sniffing
 ```
 -> start
 ```
-# stop 
+#### stop 
 ```
 -> stop
 ```
-# exit from console (dont stop NTS)
+#### exit from console (dont stop NTS)
 ```
 -> exit
 -> quit
