@@ -181,6 +181,24 @@ void NTS_cli(pid_t NTS_pid)
         {
             NTS_exit(0);
         }
+        else if( cmd != NULL && (strcmp(cmd, "killNTS")==0))
+	{
+            if(arg != NULL && strcmp(arg, "--help")==0)
+            {
+                printf("usage: killNTS ;  \
+\n\rsend SIGTERM to daemon, exit after\
+ example: \n killNTS");
+	    }
+	    else
+	    {
+		if(kill(NTS_pid, SIGTERM)==-1)
+		{
+		    fprintf(stderr, strerror(errno));
+		    exit(-1);
+		}
+		exit(0);
+	    }
+	}
     }
 }
 

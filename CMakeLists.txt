@@ -1,4 +1,4 @@
-set(DEFAULT_IF "wlp18s0")
+set(DEFAULT_IF "wlan0")
 cmake_minimum_required(VERSION 3.7) 
     set(NTS_CC_FLAGS  -ansi -Wall -Os -static)
     set(NTS_LD_FLAGS  -pthread)
